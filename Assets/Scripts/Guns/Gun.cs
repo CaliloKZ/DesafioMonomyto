@@ -19,12 +19,17 @@ public abstract class Gun : MonoBehaviour
     [SerializeField] protected int _poolDefaultCapacity = 10;
     [SerializeField] protected int _poolMaxCapacity = 100;
 
+    [SerializeField] protected int _maxAmmo;
+    [SerializeField] protected int _startingAmmo;
+    protected int _currentAmmo;
+
     protected bool _canShoot = true;
     protected bool _isShooting = false;
 
     protected virtual void Awake()
     {
         m_playerInputActions = new PlayerInputActions();
+        _currentAmmo = _startingAmmo;
     }
 
     protected virtual void OnEnable()
@@ -95,8 +100,11 @@ public abstract class Gun : MonoBehaviour
 
     protected virtual void Shoot()
     {
-        _nextTimeToFire = Time.time + _fireRate;
+        if (_currentAmmo <= 0)
+            return;
 
+        _nextTimeToFire = Time.time + _fireRate;
+        _currentAmmo--;
         var bullet = _bulletPool.Get();
         bullet.transform.position = _firePoint.position;
         bullet.transform.rotation = _firePoint.rotation;

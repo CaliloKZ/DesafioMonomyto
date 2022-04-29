@@ -28,7 +28,7 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        m_mainCam = GameManager.instance.mainCamera;
+        m_mainCam = GameManager.mainCamera;
     }
 
     private void Update()

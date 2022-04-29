@@ -62,7 +62,7 @@ public class PlayerGunSelection : MonoBehaviour
         m_gunsList[(int)gun].SetActive(true);
         m_selectedGun = gun;
         m_playerAnimator.SetInteger("CannonIndex", (int)gun);
-        UIManager.instance.ChangeWeaponHighlight((int)gun);
+       // UIManager.instance.ChangeWeaponHighlight((int)gun);
 
     }
 
