@@ -1,19 +1,89 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Pool;
+using MEC;
+using DG.Tweening;
 
 public class ChargeCannon : Gun
 {
-    [SerializeField] private float _minDamage;
-    [SerializeField] private float _medDamage;
+    private GameObject m_bullet;
+    private bool m_isCharging;
 
-    [SerializeField] private float _minBulletSpeed;
-    [SerializeField] private float _medBulletSpeed;
+    [SerializeField] private float m_chargeTime;
 
-    public override void Shoot(InputAction.CallbackContext context)
+    protected override void OnDisable()
     {
-
+        if (m_isCharging)
+        {
+            m_isCharging = false;
+            StopCharge();
+        }
+        base.OnDisable();
     }
+    protected override void PoolOnGet(GameObject obj)
+    {
+        Debug.Log("Get");
+        obj.GetComponent<SpriteRenderer>().color = Color.green;
+        obj.transform.localScale = _bulletPrefab.transform.localScale;
+        obj.SetActive(true);
+    }
+
+    protected override void Update()
+    {
+        if (_isShooting && Time.time >= _nextTimeToFire)
+        {
+            Charge();
+        }
+    }
+
+    protected override void ShootInput(InputAction.CallbackContext context)
+    {
+        base.ShootInput(context);
+
+        if (context.canceled && m_isCharging)
+             StopCharge();
+    }
+
+    protected void Charge()
+    {
+        if(!m_isCharging) {
+            m_bullet = _bulletPool.Get();
+            Timing.RunCoroutine(Charging().CancelWith(gameObject), "chargeRoutine");
+        }
+        m_isCharging = true;
+        m_bullet.transform.position = _firePoint.position;
+        m_bullet.transform.rotation = _firePoint.rotation;
+    }
+
+    protected override void Shoot()
+    {
+        _nextTimeToFire = Time.time + _fireRate;
+        m_bullet.GetComponent<Rigidbody2D>().AddForce(_firePoint.right * _bulletSpeed, ForceMode2D.Impulse);
+
+        Bullet bulletScript = m_bullet.GetComponent<Bullet>();
+        bulletScript.SetDamage(_damage);
+        bulletScript.Init(KillBullet);
+
+        m_isCharging = false;
+    }
+
+    IEnumerator<float> Charging()
+    {
+        Debug.Log("test call");
+        m_bullet.transform.DOScale(1, m_chargeTime);
+        m_bullet.GetComponent<SpriteRenderer>().DOColor(Color.red, m_chargeTime);
+        yield return Timing.WaitForSeconds(m_chargeTime);
+        Shoot();
+    }
+
+    private void StopCharge()
+    {
+        m_isCharging = false;
+        DOTween.Kill(m_bullet, false);
+        DOTween.Clear();
+        Timing.KillCoroutines("chargeRoutine");
+        KillBullet(m_bullet.GetComponent<Bullet>());
+    }
+
+
 }

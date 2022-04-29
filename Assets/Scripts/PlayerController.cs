@@ -1,13 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D m_rigidbody;
     private PlayerInputActions m_playerInputActions;
-    private PlayerGunSelection m_gunSelection;
 
     [SerializeField] private float m_moveSpeed;
     private Vector2 m_inputVector;
@@ -17,10 +13,10 @@ public class PlayerController : MonoBehaviour
     private float m_angle;
     private Camera m_mainCam;
 
+
     private void Awake()
     {
         m_rigidbody = GetComponent<Rigidbody2D>();
-        m_gunSelection = GetComponent<PlayerGunSelection>();
         ActivatePlayerInput();
     }
 
@@ -28,7 +24,6 @@ public class PlayerController : MonoBehaviour
     {
         m_playerInputActions = new PlayerInputActions();
         m_playerInputActions.Player.Enable();
-        //m_playerInputActions.Player.Shoot.performed += Shoot;
     }
 
     private void Start()
@@ -53,8 +48,4 @@ public class PlayerController : MonoBehaviour
         m_rigidbody.rotation = m_angle;
     }
 
-    //public void Shoot(InputAction.CallbackContext context)
-    //{
-    //    m_gunSelection.selectedGun.Shoot(context);
-    //}
 }

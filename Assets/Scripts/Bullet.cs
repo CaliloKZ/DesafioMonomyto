@@ -4,25 +4,31 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     private Action<Bullet> m_killAction;
+    private int m_damage;
 
     public void Init(Action<Bullet> killAction)
     {
         m_killAction = killAction;
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    public void SetDamage(int damageAmount)
     {
-        if (collision.collider.CompareTag("Player"))
-        {
+        m_damage = damageAmount;
+    }
 
-        }
-        else if (collision.collider.CompareTag("Object"))
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        IDamageable hit = other.GetComponent<IDamageable>();
+        
+        if(hit != null)
         {
-
+            hit.Damage(m_damage);
         }
         else
         {
-            m_killAction(this);
+            Debug.Log("IDamageable component not found.");
         }
+
+        m_killAction(this);
     }
 }
