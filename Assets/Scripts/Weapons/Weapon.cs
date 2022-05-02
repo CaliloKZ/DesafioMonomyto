@@ -1,9 +1,16 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Pool;
 
-public abstract class Gun : MonoBehaviour
+public abstract class Weapon : MonoBehaviour
 {
+    [SerializeField] protected Weapons _weaponType;
+    public Weapons GetWeaponType()
+    {
+        return _weaponType;
+    }
+
     private PlayerInputActions m_playerInputActions;
 
     [SerializeField] protected int _damage;
@@ -20,8 +27,15 @@ public abstract class Gun : MonoBehaviour
     [SerializeField] protected int _poolMaxCapacity = 100;
 
     [SerializeField] protected int _maxAmmo;
-    [SerializeField] protected int _startingAmmo;
     protected int _currentAmmo;
+
+    protected bool _isActive;
+
+    public int[] GetAmmo()
+    {
+        var _ammo = new int[] { _currentAmmo, _maxAmmo };
+        return _ammo;
+    }
 
     protected bool _canShoot = true;
     protected bool _isShooting = false;
@@ -29,29 +43,31 @@ public abstract class Gun : MonoBehaviour
     protected virtual void Awake()
     {
         m_playerInputActions = new PlayerInputActions();
-        _currentAmmo = _startingAmmo;
+        _currentAmmo = _maxAmmo;
     }
 
     protected virtual void OnEnable()
     {
-        m_playerInputActions.Gun.Enable();
-        m_playerInputActions.Gun.Shoot.started += ShootInput;
-        m_playerInputActions.Gun.Shoot.canceled += ShootInput;
+        _isActive = true;
+        m_playerInputActions.Weapon.Enable();
+        m_playerInputActions.Weapon.Shoot.started += ShootInput;
+        m_playerInputActions.Weapon.Shoot.canceled += ShootInput;
     }
 
     protected virtual void OnDisable()
     {
+        _isActive = false;
         _isShooting = false;
-        m_playerInputActions.Gun.Shoot.started -= ShootInput;
-        m_playerInputActions.Gun.Shoot.canceled -= ShootInput;
-        m_playerInputActions.Gun.Disable();
+        m_playerInputActions.Weapon.Shoot.started -= ShootInput;
+        m_playerInputActions.Weapon.Shoot.canceled -= ShootInput;
+        m_playerInputActions.Weapon.Disable();
         _bulletPool.Dispose();
     }
 
     protected virtual void Start()
     {
         _bulletPool = new ObjectPool<GameObject>(() => {
-            return Instantiate(_bulletPrefab, _firePoint.position, _firePoint.rotation);
+            return Instantiate(_bulletPrefab);
         }, bullet => {
             PoolOnGet(bullet);
         }, bullet => {
@@ -62,6 +78,7 @@ public abstract class Gun : MonoBehaviour
     }
 
     #region PoolMethods
+
     protected virtual void PoolOnGet(GameObject obj)
     {
         obj.SetActive(true);
@@ -98,28 +115,21 @@ public abstract class Gun : MonoBehaviour
             _isShooting = false;
     }
 
-    protected virtual void Shoot()
-    {
-        if (_currentAmmo <= 0)
-            return;
-
-        _nextTimeToFire = Time.time + _fireRate;
-        _currentAmmo--;
-        var bullet = _bulletPool.Get();
-        bullet.transform.position = _firePoint.position;
-        bullet.transform.rotation = _firePoint.rotation;
-        bullet.GetComponent<Rigidbody2D>().AddForce(_firePoint.right * _bulletSpeed, ForceMode2D.Impulse);
-
-        Bullet bulletScript = bullet.GetComponent<Bullet>();
-        bulletScript.SetDamage(_damage);
-        bulletScript.Init(KillBullet);
-
-    }
+    protected virtual void Shoot() { }
 
     protected virtual void KillBullet(Bullet bullet)
     {
         _bulletPool.Release(bullet.gameObject);
     }
 
+    public virtual void AmmoPickup(int amount)
+    {
+        _currentAmmo += amount;
+        if(_currentAmmo > _maxAmmo)
+            _currentAmmo = _maxAmmo;
+
+        if(_isActive)
+            AmmoCount.OnCurrentAmmoChange(_currentAmmo);
+    }
    
 }

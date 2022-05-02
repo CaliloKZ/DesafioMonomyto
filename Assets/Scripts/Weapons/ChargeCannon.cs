@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 using MEC;
 using DG.Tweening;
 
-public class ChargeCannon : Gun
+public class ChargeCannon : Weapon
 {
     private GameObject m_bullet;
     private bool m_isCharging;
@@ -22,7 +22,7 @@ public class ChargeCannon : Gun
     }
     protected override void PoolOnGet(GameObject obj)
     {
-        Debug.Log("Get");
+        obj.GetComponent<CircleCollider2D>().enabled = false;
         obj.GetComponent<SpriteRenderer>().color = Color.green;
         obj.transform.localScale = _bulletPrefab.transform.localScale;
         obj.SetActive(true);
@@ -46,7 +46,10 @@ public class ChargeCannon : Gun
 
     protected void Charge()
     {
-        if(!m_isCharging) {
+        if (_currentAmmo <= 0)
+            return;
+
+        if (!m_isCharging) {
             m_bullet = _bulletPool.Get();
             Timing.RunCoroutine(Charging().CancelWith(gameObject), "chargeRoutine");
         }
@@ -58,7 +61,12 @@ public class ChargeCannon : Gun
     protected override void Shoot()
     {
         _nextTimeToFire = Time.time + _fireRate;
+
+        _currentAmmo--;
+        AmmoCount.OnCurrentAmmoChange(_currentAmmo);
+
         m_bullet.GetComponent<Rigidbody2D>().AddForce(_firePoint.right * _bulletSpeed, ForceMode2D.Impulse);
+        m_bullet.GetComponent<CircleCollider2D>().enabled = true;
 
         Bullet bulletScript = m_bullet.GetComponent<Bullet>();
         bulletScript.SetDamage(_damage);

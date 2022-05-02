@@ -1,4 +1,4 @@
-public enum Guns 
+public enum Weapons 
 { 
     Single,
     Double,

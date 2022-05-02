@@ -4,6 +4,8 @@ public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D m_rigidbody;
     private PlayerInputActions m_playerInputActions;
+    private PlayerWeaponSelection m_playerWeaponSelection;
+    private PlayerHealthController m_playerHealthController;
 
     [SerializeField] private float m_moveSpeed;
     private Vector2 m_inputVector;
@@ -17,10 +19,11 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         m_rigidbody = GetComponent<Rigidbody2D>();
+        m_playerWeaponSelection = GetComponent<PlayerWeaponSelection>();
         ActivatePlayerInput();
     }
 
-    void ActivatePlayerInput()
+    private void ActivatePlayerInput()
     {
         m_playerInputActions = new PlayerInputActions();
         m_playerInputActions.Player.Enable();
@@ -46,6 +49,19 @@ public class PlayerController : MonoBehaviour
         m_lookDirection = m_mousePosition - m_rigidbody.position;
         m_angle = Mathf.Atan2(m_lookDirection.y, m_lookDirection.x) * Mathf.Rad2Deg;
         m_rigidbody.rotation = m_angle;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        var other = collision.collider;
+
+        if (other.CompareTag("Ammo"))
+        {
+            var ammoScript = other.GetComponent<AmmoCollectable>();
+            var weapon = m_playerWeaponSelection.weaponsList[(int)ammoScript.ammoType];
+            weapon.AmmoPickup(ammoScript.ammoAmount);
+            Destroy(other.gameObject);
+        }
     }
 
 }

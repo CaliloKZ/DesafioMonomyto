@@ -158,7 +158,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
             ]
         },
         {
-            ""name"": ""Gun"",
+            ""name"": ""Weapon"",
             ""id"": ""a2d5dd2e-d188-4301-a306-0df6d38d312e"",
             ""actions"": [
                 {
@@ -215,9 +215,9 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         m_Player_Movement = m_Player.FindAction("Movement", throwIfNotFound: true);
         m_Player_WeaponScroll = m_Player.FindAction("WeaponScroll", throwIfNotFound: true);
         m_Player_WeaponKey = m_Player.FindAction("WeaponKey", throwIfNotFound: true);
-        // Gun
-        m_Gun = asset.FindActionMap("Gun", throwIfNotFound: true);
-        m_Gun_Shoot = m_Gun.FindAction("Shoot", throwIfNotFound: true);
+        // Weapon
+        m_Weapon = asset.FindActionMap("Weapon", throwIfNotFound: true);
+        m_Weapon_Shoot = m_Weapon.FindAction("Shoot", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -323,29 +323,29 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
     }
     public PlayerActions @Player => new PlayerActions(this);
 
-    // Gun
-    private readonly InputActionMap m_Gun;
-    private IGunActions m_GunActionsCallbackInterface;
-    private readonly InputAction m_Gun_Shoot;
-    public struct GunActions
+    // Weapon
+    private readonly InputActionMap m_Weapon;
+    private IWeaponActions m_WeaponActionsCallbackInterface;
+    private readonly InputAction m_Weapon_Shoot;
+    public struct WeaponActions
     {
         private @PlayerInputActions m_Wrapper;
-        public GunActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Shoot => m_Wrapper.m_Gun_Shoot;
-        public InputActionMap Get() { return m_Wrapper.m_Gun; }
+        public WeaponActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Shoot => m_Wrapper.m_Weapon_Shoot;
+        public InputActionMap Get() { return m_Wrapper.m_Weapon; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
         public bool enabled => Get().enabled;
-        public static implicit operator InputActionMap(GunActions set) { return set.Get(); }
-        public void SetCallbacks(IGunActions instance)
+        public static implicit operator InputActionMap(WeaponActions set) { return set.Get(); }
+        public void SetCallbacks(IWeaponActions instance)
         {
-            if (m_Wrapper.m_GunActionsCallbackInterface != null)
+            if (m_Wrapper.m_WeaponActionsCallbackInterface != null)
             {
-                @Shoot.started -= m_Wrapper.m_GunActionsCallbackInterface.OnShoot;
-                @Shoot.performed -= m_Wrapper.m_GunActionsCallbackInterface.OnShoot;
-                @Shoot.canceled -= m_Wrapper.m_GunActionsCallbackInterface.OnShoot;
+                @Shoot.started -= m_Wrapper.m_WeaponActionsCallbackInterface.OnShoot;
+                @Shoot.performed -= m_Wrapper.m_WeaponActionsCallbackInterface.OnShoot;
+                @Shoot.canceled -= m_Wrapper.m_WeaponActionsCallbackInterface.OnShoot;
             }
-            m_Wrapper.m_GunActionsCallbackInterface = instance;
+            m_Wrapper.m_WeaponActionsCallbackInterface = instance;
             if (instance != null)
             {
                 @Shoot.started += instance.OnShoot;
@@ -354,7 +354,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
             }
         }
     }
-    public GunActions @Gun => new GunActions(this);
+    public WeaponActions @Weapon => new WeaponActions(this);
     private int m_KeyboardSchemeIndex = -1;
     public InputControlScheme KeyboardScheme
     {
@@ -379,7 +379,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         void OnWeaponScroll(InputAction.CallbackContext context);
         void OnWeaponKey(InputAction.CallbackContext context);
     }
-    public interface IGunActions
+    public interface IWeaponActions
     {
         void OnShoot(InputAction.CallbackContext context);
     }
