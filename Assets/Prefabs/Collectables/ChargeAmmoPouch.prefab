@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7881695326841546917}
   - component: {fileID: 7881695326841546938}
-  m_Layer: 6
+  m_Layer: 10
   m_Name: CanonMiddle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -93,7 +93,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7881695327843673316}
-  m_Layer: 6
+  m_Layer: 10
   m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -125,7 +125,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7881695327951736053}
   - component: {fileID: 7881695327951736010}
-  m_Layer: 6
+  m_Layer: 10
   m_Name: CanonStart
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -209,7 +209,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7881695328145684051}
   - component: {fileID: 7881695328145684048}
-  m_Layer: 6
+  m_Layer: 10
   m_Name: CanonEnd
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -293,7 +293,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7881695328255686114}
-  m_Layer: 6
+  m_Layer: 10
   m_Name: ChargeCannon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -330,7 +330,7 @@ GameObject:
   - component: {fileID: 7881695328468121101}
   - component: {fileID: 7881695328468121100}
   - component: {fileID: 7881695328468121103}
-  m_Layer: 8
+  m_Layer: 10
   m_Name: ChargeAmmoPouch
   m_TagString: Ammo
   m_Icon: {fileID: 0}

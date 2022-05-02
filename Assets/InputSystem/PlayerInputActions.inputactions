@@ -31,6 +31,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Shoot",
+                    "type": "Button",
+                    "id": "b1bc655b-5c72-49e4-8d29-e26b7779eaa1",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -132,27 +141,10 @@
                     "action": "WeaponKey",
                     "isComposite": false,
                     "isPartOfComposite": false
-                }
-            ]
-        },
-        {
-            "name": "Weapon",
-            "id": "a2d5dd2e-d188-4301-a306-0df6d38d312e",
-            "actions": [
-                {
-                    "name": "Shoot",
-                    "type": "Button",
-                    "id": "9a2ceea2-fe51-426f-a000-fe79c54e763c",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                }
-            ],
-            "bindings": [
+                },
                 {
                     "name": "",
-                    "id": "fcd636f9-621b-403f-aef0-898082983dd8",
+                    "id": "89654a46-39fd-4303-af18-584bc265baed",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
@@ -163,7 +155,7 @@
                 },
                 {
                     "name": "",
-                    "id": "131ad6dd-278c-4353-8baa-f6fadc31ebbb",
+                    "id": "9ce0c3b5-05e6-444a-ad4a-496e491dc3b1",
                     "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "",

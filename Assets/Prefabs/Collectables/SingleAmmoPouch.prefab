@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3206839587629139249}
   - component: {fileID: 3206839587629139248}
   - component: {fileID: 3206839587629139251}
-  m_Layer: 8
+  m_Layer: 10
   m_Name: SingleAmmoPouch
   m_TagString: Ammo
   m_Icon: {fileID: 0}
@@ -127,7 +127,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3206839588334269788}
   - component: {fileID: 3206839588334269789}
-  m_Layer: 8
+  m_Layer: 10
   m_Name: SingleCannon
   m_TagString: Untagged
   m_Icon: {fileID: 0}

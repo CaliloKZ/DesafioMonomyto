@@ -34,14 +34,11 @@ public class ChargeCannon : Weapon
         {
             Charge();
         }
-    }
 
-    protected override void ShootInput(InputAction.CallbackContext context)
-    {
-        base.ShootInput(context);
-
-        if (context.canceled && m_isCharging)
-             StopCharge();
+        if(!_isShooting && m_isCharging)
+        {
+            StopCharge();
+        }
     }
 
     protected void Charge()

@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Pool;
+using Photon.Pun;
 
 public abstract class Weapon : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public abstract class Weapon : MonoBehaviour
     [SerializeField] protected int _damage;
     [SerializeField] protected float _bulletSpeed;
     [SerializeField] protected GameObject _bulletPrefab;
+    [SerializeField] protected string _prefabPath;
 
     [SerializeField] protected Transform _firePoint;
     [SerializeField] protected float _fireRate;
@@ -37,7 +39,6 @@ public abstract class Weapon : MonoBehaviour
         return _ammo;
     }
 
-    protected bool _canShoot = true;
     protected bool _isShooting = false;
 
     protected virtual void Awake()
@@ -49,25 +50,19 @@ public abstract class Weapon : MonoBehaviour
     protected virtual void OnEnable()
     {
         _isActive = true;
-        m_playerInputActions.Weapon.Enable();
-        m_playerInputActions.Weapon.Shoot.started += ShootInput;
-        m_playerInputActions.Weapon.Shoot.canceled += ShootInput;
     }
 
     protected virtual void OnDisable()
     {
         _isActive = false;
         _isShooting = false;
-        m_playerInputActions.Weapon.Shoot.started -= ShootInput;
-        m_playerInputActions.Weapon.Shoot.canceled -= ShootInput;
-        m_playerInputActions.Weapon.Disable();
         _bulletPool.Dispose();
     }
 
     protected virtual void Start()
     {
         _bulletPool = new ObjectPool<GameObject>(() => {
-            return Instantiate(_bulletPrefab);
+            return PhotonNetwork.Instantiate((_prefabPath + _bulletPrefab.name), transform.position, Quaternion.identity);
         }, bullet => {
             PoolOnGet(bullet);
         }, bullet => {
@@ -104,16 +99,11 @@ public abstract class Weapon : MonoBehaviour
         }
     }
 
-    protected virtual void ShootInput(InputAction.CallbackContext context)
+    public virtual void ShootCalled(bool isShooting)
     {
-        if (!_canShoot)
-            return;
-
-        if (context.started)
-            _isShooting = true;
-        else if (context.canceled)
-            _isShooting = false;
+        _isShooting = isShooting;
     }
+
 
     protected virtual void Shoot() { }
 

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9048207226752338725}
   - component: {fileID: 9048207226752338722}
-  m_Layer: 6
+  m_Layer: 10
   m_Name: RightArm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 9048207226799601785}
   - component: {fileID: 9048207226799601784}
   - component: {fileID: 9048207226799601787}
-  m_Layer: 8
+  m_Layer: 10
   m_Name: DoubleAmmoPouch
   m_TagString: Ammo
   m_Icon: {fileID: 0}
@@ -211,7 +211,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9048207227010843310}
-  m_Layer: 6
+  m_Layer: 10
   m_Name: DoubleCannon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -245,7 +245,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9048207227756124843}
   - component: {fileID: 9048207227756124840}
-  m_Layer: 6
+  m_Layer: 10
   m_Name: Canon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -329,7 +329,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9048207228565260167}
   - component: {fileID: 9048207228565260164}
-  m_Layer: 6
+  m_Layer: 10
   m_Name: Canon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -413,7 +413,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9048207228696772954}
   - component: {fileID: 9048207228696772955}
-  m_Layer: 6
+  m_Layer: 10
   m_Name: LeftArm
   m_TagString: Untagged
   m_Icon: {fileID: 0}

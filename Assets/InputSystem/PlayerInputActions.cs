@@ -53,6 +53,15 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Shoot"",
+                    ""type"": ""Button"",
+                    ""id"": ""b1bc655b-5c72-49e4-8d29-e26b7779eaa1"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -154,27 +163,10 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""action"": ""WeaponKey"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
-                }
-            ]
-        },
-        {
-            ""name"": ""Weapon"",
-            ""id"": ""a2d5dd2e-d188-4301-a306-0df6d38d312e"",
-            ""actions"": [
-                {
-                    ""name"": ""Shoot"",
-                    ""type"": ""Button"",
-                    ""id"": ""9a2ceea2-fe51-426f-a000-fe79c54e763c"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                }
-            ],
-            ""bindings"": [
+                },
                 {
                     ""name"": """",
-                    ""id"": ""fcd636f9-621b-403f-aef0-898082983dd8"",
+                    ""id"": ""89654a46-39fd-4303-af18-584bc265baed"",
                     ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -185,7 +177,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""131ad6dd-278c-4353-8baa-f6fadc31ebbb"",
+                    ""id"": ""9ce0c3b5-05e6-444a-ad4a-496e491dc3b1"",
                     ""path"": ""<Gamepad>/buttonSouth"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -215,9 +207,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         m_Player_Movement = m_Player.FindAction("Movement", throwIfNotFound: true);
         m_Player_WeaponScroll = m_Player.FindAction("WeaponScroll", throwIfNotFound: true);
         m_Player_WeaponKey = m_Player.FindAction("WeaponKey", throwIfNotFound: true);
-        // Weapon
-        m_Weapon = asset.FindActionMap("Weapon", throwIfNotFound: true);
-        m_Weapon_Shoot = m_Weapon.FindAction("Shoot", throwIfNotFound: true);
+        m_Player_Shoot = m_Player.FindAction("Shoot", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -280,6 +270,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Movement;
     private readonly InputAction m_Player_WeaponScroll;
     private readonly InputAction m_Player_WeaponKey;
+    private readonly InputAction m_Player_Shoot;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -287,6 +278,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         public InputAction @Movement => m_Wrapper.m_Player_Movement;
         public InputAction @WeaponScroll => m_Wrapper.m_Player_WeaponScroll;
         public InputAction @WeaponKey => m_Wrapper.m_Player_WeaponKey;
+        public InputAction @Shoot => m_Wrapper.m_Player_Shoot;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -305,6 +297,9 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @WeaponKey.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnWeaponKey;
                 @WeaponKey.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnWeaponKey;
                 @WeaponKey.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnWeaponKey;
+                @Shoot.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShoot;
+                @Shoot.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShoot;
+                @Shoot.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShoot;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -318,43 +313,13 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @WeaponKey.started += instance.OnWeaponKey;
                 @WeaponKey.performed += instance.OnWeaponKey;
                 @WeaponKey.canceled += instance.OnWeaponKey;
-            }
-        }
-    }
-    public PlayerActions @Player => new PlayerActions(this);
-
-    // Weapon
-    private readonly InputActionMap m_Weapon;
-    private IWeaponActions m_WeaponActionsCallbackInterface;
-    private readonly InputAction m_Weapon_Shoot;
-    public struct WeaponActions
-    {
-        private @PlayerInputActions m_Wrapper;
-        public WeaponActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Shoot => m_Wrapper.m_Weapon_Shoot;
-        public InputActionMap Get() { return m_Wrapper.m_Weapon; }
-        public void Enable() { Get().Enable(); }
-        public void Disable() { Get().Disable(); }
-        public bool enabled => Get().enabled;
-        public static implicit operator InputActionMap(WeaponActions set) { return set.Get(); }
-        public void SetCallbacks(IWeaponActions instance)
-        {
-            if (m_Wrapper.m_WeaponActionsCallbackInterface != null)
-            {
-                @Shoot.started -= m_Wrapper.m_WeaponActionsCallbackInterface.OnShoot;
-                @Shoot.performed -= m_Wrapper.m_WeaponActionsCallbackInterface.OnShoot;
-                @Shoot.canceled -= m_Wrapper.m_WeaponActionsCallbackInterface.OnShoot;
-            }
-            m_Wrapper.m_WeaponActionsCallbackInterface = instance;
-            if (instance != null)
-            {
                 @Shoot.started += instance.OnShoot;
                 @Shoot.performed += instance.OnShoot;
                 @Shoot.canceled += instance.OnShoot;
             }
         }
     }
-    public WeaponActions @Weapon => new WeaponActions(this);
+    public PlayerActions @Player => new PlayerActions(this);
     private int m_KeyboardSchemeIndex = -1;
     public InputControlScheme KeyboardScheme
     {
@@ -378,9 +343,6 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         void OnMovement(InputAction.CallbackContext context);
         void OnWeaponScroll(InputAction.CallbackContext context);
         void OnWeaponKey(InputAction.CallbackContext context);
-    }
-    public interface IWeaponActions
-    {
         void OnShoot(InputAction.CallbackContext context);
     }
 }

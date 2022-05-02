@@ -16,6 +16,6 @@ public class PlayerHealthController : MonoBehaviour, IDamageable
 
     public void Damage(int damageAmount)
     {
-        throw new System.NotImplementedException();
+        Debug.Log("damage");
     }
 }

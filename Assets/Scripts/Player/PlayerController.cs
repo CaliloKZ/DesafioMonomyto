@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
+using Photon.Pun;
 
 public class PlayerController : MonoBehaviour
 {
@@ -15,18 +17,34 @@ public class PlayerController : MonoBehaviour
     private float m_angle;
     private Camera m_mainCam;
 
+    private bool m_canShoot = true;
+
+    private PhotonView m_photonView;
 
     private void Awake()
     {
+        m_photonView = GetComponent<PhotonView>();
         m_rigidbody = GetComponent<Rigidbody2D>();
         m_playerWeaponSelection = GetComponent<PlayerWeaponSelection>();
-        ActivatePlayerInput();
+
+        if (m_photonView.IsMine)
+        {
+            ActivatePlayerInput();
+        }
+        else
+        {
+            Destroy(m_rigidbody);
+            Destroy(m_playerWeaponSelection);
+        }
+
     }
 
     private void ActivatePlayerInput()
     {
         m_playerInputActions = new PlayerInputActions();
         m_playerInputActions.Player.Enable();
+        m_playerInputActions.Player.Shoot.started += ShootInput;
+        m_playerInputActions.Player.Shoot.canceled += ShootInput;
     }
 
     private void Start()
@@ -36,11 +54,16 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        m_mousePosition = m_mainCam.ScreenToWorldPoint(Input.mousePosition);
+        if (!m_photonView.IsMine)
+            return;
+
+            m_mousePosition = m_mainCam.ScreenToWorldPoint(Input.mousePosition);
     }
 
     private void FixedUpdate()
     {
+        if (!m_photonView.IsMine)
+            return;
         //movimentação
         m_inputVector = m_playerInputActions.Player.Movement.ReadValue<Vector2>();
         m_rigidbody.AddForce(new Vector2(m_inputVector.x, m_inputVector.y) * m_moveSpeed, ForceMode2D.Force);
@@ -53,6 +76,9 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        if (!m_photonView.IsMine)
+            return;
+
         var other = collision.collider;
 
         if (other.CompareTag("Ammo"))
@@ -62,6 +88,17 @@ public class PlayerController : MonoBehaviour
             weapon.AmmoPickup(ammoScript.ammoAmount);
             Destroy(other.gameObject);
         }
+    }
+
+    private void ShootInput(InputAction.CallbackContext context)
+    {
+        if (!m_canShoot)
+            return;
+
+        if (context.started)
+            m_playerWeaponSelection.selectedWeapon.ShootCalled(true);
+        else if (context.canceled)
+            m_playerWeaponSelection.selectedWeapon.ShootCalled(false);
     }
 
 }
