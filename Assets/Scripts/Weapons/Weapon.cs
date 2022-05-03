@@ -31,6 +31,8 @@ public abstract class Weapon : MonoBehaviour
     [SerializeField] protected int _maxAmmo;
     protected int _currentAmmo;
 
+    protected PhotonView _photonView;
+
     protected bool _isActive;
 
     public int[] GetAmmo()
@@ -43,6 +45,7 @@ public abstract class Weapon : MonoBehaviour
 
     protected virtual void Awake()
     {
+        _photonView = GetComponent<PhotonView>();
         m_playerInputActions = new PlayerInputActions();
         _currentAmmo = _maxAmmo;
     }
@@ -62,7 +65,7 @@ public abstract class Weapon : MonoBehaviour
     protected virtual void Start()
     {
         _bulletPool = new ObjectPool<GameObject>(() => {
-            return PhotonNetwork.Instantiate((_prefabPath + _bulletPrefab.name), transform.position, Quaternion.identity);
+            return Instantiate(_bulletPrefab);
         }, bullet => {
             PoolOnGet(bullet);
         }, bullet => {
@@ -93,6 +96,9 @@ public abstract class Weapon : MonoBehaviour
 
     protected virtual void Update()
     {
+        if (!_photonView.IsMine)
+            return;
+
         if(_isShooting && Time.time >= _nextTimeToFire)
         {
             Shoot();

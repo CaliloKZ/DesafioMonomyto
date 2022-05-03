@@ -39,6 +39,15 @@ MonoBehaviour:
   - DestroySpaceship
   - Fire
   - RespawnSpaceship
+  - RPC_Shoot
+  - EquipWeapon
+  - SpawnLeftBullet
+  - SpawnRightBullet
+  - RPC_EquipWeapon
+  - Charge
+  - Shoot
+  - StopCharge
+  - RPC_EnemyShoot
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

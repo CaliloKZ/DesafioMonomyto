@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using MEC;
 using DG.Tweening;
+using Photon.Pun;
 
 public class ChargeCannon : Weapon
 {
@@ -16,7 +17,8 @@ public class ChargeCannon : Weapon
         if (m_isCharging)
         {
             m_isCharging = false;
-            StopCharge();
+            _photonView.RPC("StopCharge", RpcTarget.All);
+            //StopCharge();
         }
         base.OnDisable();
     }
@@ -30,17 +32,23 @@ public class ChargeCannon : Weapon
 
     protected override void Update()
     {
+        if (!_photonView.IsMine)
+            return;
+
         if (_isShooting && Time.time >= _nextTimeToFire)
         {
-            Charge();
+            _photonView.RPC("Charge", RpcTarget.All);
+            //Charge();
         }
 
         if(!_isShooting && m_isCharging)
         {
-            StopCharge();
+            _photonView.RPC("StopCharge", RpcTarget.All);
+            //StopCharge();
         }
     }
 
+    [PunRPC]
     protected void Charge()
     {
         if (_currentAmmo <= 0)
@@ -55,12 +63,15 @@ public class ChargeCannon : Weapon
         m_bullet.transform.rotation = _firePoint.rotation;
     }
 
+    [PunRPC]
     protected override void Shoot()
     {
-        _nextTimeToFire = Time.time + _fireRate;
-
-        _currentAmmo--;
-        AmmoCount.OnCurrentAmmoChange(_currentAmmo);
+        if (_photonView.IsMine)
+        {
+            _nextTimeToFire = Time.time + _fireRate;
+            _currentAmmo--;
+            AmmoCount.OnCurrentAmmoChange(_currentAmmo);
+        }
 
         m_bullet.GetComponent<Rigidbody2D>().AddForce(_firePoint.right * _bulletSpeed, ForceMode2D.Impulse);
         m_bullet.GetComponent<CircleCollider2D>().enabled = true;
@@ -78,9 +89,11 @@ public class ChargeCannon : Weapon
         m_bullet.transform.DOScale(1, m_chargeTime);
         m_bullet.GetComponent<SpriteRenderer>().DOColor(Color.red, m_chargeTime);
         yield return Timing.WaitForSeconds(m_chargeTime);
-        Shoot();
+        _photonView.RPC("Shoot", RpcTarget.All);
+        //Shoot();
     }
 
+    [PunRPC]
     private void StopCharge()
     {
         m_isCharging = false;

@@ -26,15 +26,11 @@ public class PlayerController : MonoBehaviour
         m_photonView = GetComponent<PhotonView>();
         m_rigidbody = GetComponent<Rigidbody2D>();
         m_playerWeaponSelection = GetComponent<PlayerWeaponSelection>();
+        ActivatePlayerInput();
 
-        if (m_photonView.IsMine)
-        {
-            ActivatePlayerInput();
-        }
-        else
+        if (!m_photonView.IsMine)
         {
             Destroy(m_rigidbody);
-            Destroy(m_playerWeaponSelection);
         }
 
     }
@@ -92,7 +88,7 @@ public class PlayerController : MonoBehaviour
 
     private void ShootInput(InputAction.CallbackContext context)
     {
-        if (!m_canShoot)
+        if (!m_canShoot || !m_photonView.IsMine)
             return;
 
         if (context.started)

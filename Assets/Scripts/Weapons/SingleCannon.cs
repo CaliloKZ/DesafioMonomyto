@@ -1,8 +1,15 @@
 using UnityEngine;
+using Photon.Pun;
 
 public class SingleCannon : Weapon
 {
     protected override void Shoot()
+    {
+        _photonView.RPC("RPC_Shoot", RpcTarget.All);
+    }
+
+    [PunRPC]
+    private void RPC_Shoot()
     {
         if (_currentAmmo <= 0)
             return;

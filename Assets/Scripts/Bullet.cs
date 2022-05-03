@@ -17,6 +17,7 @@ public class Bullet : MonoBehaviour
         if(hit != null)
         {
             hit.Damage(m_damage);
+            Debug.Log($"hit: {hit}, damage: {m_damage}");
         }
         else
         {

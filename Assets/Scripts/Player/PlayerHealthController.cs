@@ -16,6 +16,6 @@ public class PlayerHealthController : MonoBehaviour, IDamageable
 
     public void Damage(int damageAmount)
     {
-        Debug.Log("damage");
+        Debug.Log("PlayerDamaged");
     }
 }

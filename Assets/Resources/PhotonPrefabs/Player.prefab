@@ -267,6 +267,7 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 6214075825572670551}
+  - {fileID: -7088364689790220847}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -1017,6 +1018,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9019629690401019119}
   - component: {fileID: 9019629690401019118}
+  - component: {fileID: 5039900934582431559}
   m_Layer: 6
   m_Name: ChargeCannon
   m_TagString: Untagged
@@ -1065,6 +1067,29 @@ MonoBehaviour:
   _poolMaxCapacity: 10
   _maxAmmo: 4
   m_chargeTime: 1.5
+--- !u!114 &5039900934582431559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9019629690401019116}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 0
+  ObservedComponents:
+  - {fileID: 0}
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &9019629690497577807
 GameObject:
   m_ObjectHideFlags: 0
@@ -1159,6 +1184,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9019629690543896635}
   - component: {fileID: 9019629690543896634}
+  - component: {fileID: 6266572601500425510}
   m_Layer: 6
   m_Name: SingleCannon
   m_TagString: Untagged
@@ -1204,6 +1230,28 @@ MonoBehaviour:
   _poolDefaultCapacity: 10
   _poolMaxCapacity: 20
   _maxAmmo: 10
+--- !u!114 &6266572601500425510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9019629690543896632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &9019629690624726459
 GameObject:
   m_ObjectHideFlags: 0
@@ -1245,6 +1293,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9019629690627557138}
   - component: {fileID: 9019629690627557165}
+  - component: {fileID: 2027436841025598315}
   m_Layer: 6
   m_Name: DoubleCannon
   m_TagString: Untagged
@@ -1293,3 +1342,25 @@ MonoBehaviour:
   _maxAmmo: 100
   m_rightFirePoint: {fileID: 9019629690174832290}
   m_leftFirePoint: {fileID: 9019629690624726458}
+--- !u!114 &2027436841025598315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9019629690627557139}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0

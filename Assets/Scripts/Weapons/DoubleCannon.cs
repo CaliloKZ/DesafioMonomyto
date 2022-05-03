@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
+using Photon.Pun;
 
 public class DoubleCannon : Weapon
 {
@@ -11,15 +11,21 @@ public class DoubleCannon : Weapon
         if (_currentAmmo <= 0)
             return;
 
-        _nextTimeToFire = Time.time + _fireRate;
+        if (_photonView.IsMine)
+        {
+            _nextTimeToFire = Time.time + _fireRate;
 
-        _currentAmmo -= 2;
-        AmmoCount.OnCurrentAmmoChange(_currentAmmo);
+            _currentAmmo -= 2;
+            AmmoCount.OnCurrentAmmoChange(_currentAmmo);
+        }
 
-        SpawnRightBullet();
-        SpawnLeftBullet();
+        _photonView.RPC("SpawnRightBullet", RpcTarget.All);
+        _photonView.RPC("SpawnLeftBullet", RpcTarget.All);
+        //SpawnRightBullet();
+        //SpawnLeftBullet();
     }
 
+    [PunRPC]
     private void SpawnRightBullet()
     {
         var bullet = _bulletPool.Get();
@@ -32,6 +38,7 @@ public class DoubleCannon : Weapon
         bulletScript.Init(KillBullet);
     }
 
+    [PunRPC]
     private void SpawnLeftBullet()
     {
         var bullet = _bulletPool.Get();
