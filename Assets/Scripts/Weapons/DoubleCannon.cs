@@ -35,6 +35,10 @@ public class DoubleCannon : Weapon
 
         Bullet bulletScript = bullet.GetComponent<Bullet>();
         bulletScript.SetDamage(_damage);
+
+        if(_photonView.IsMine)
+            bulletScript.SetPhotonView(_photonView);
+
         bulletScript.Init(KillBullet);
     }
 
@@ -48,6 +52,10 @@ public class DoubleCannon : Weapon
 
         Bullet bulletScript = bullet.GetComponent<Bullet>();
         bulletScript.SetDamage(_damage);
+
+        if (_photonView.IsMine)
+            bulletScript.SetPhotonView(_photonView);
+
         bulletScript.Init(KillBullet);
     }
 

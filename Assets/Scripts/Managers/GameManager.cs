@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     public static Camera mainCamera { get; private set; }
 
     [SerializeField] private CinemachineVirtualCamera m_playerCam;
+    private PlayerManager m_playerManager;
 
     private void Awake()
     {
@@ -19,8 +20,10 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         var _playerManager = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerManager"), Vector3.zero, Quaternion.identity);
-        _playerManager.GetComponent<PlayerManager>().SetCamera(m_playerCam);
+        m_playerManager = _playerManager.GetComponent<PlayerManager>();
+        m_playerManager.SetCamera(m_playerCam);
     }
 
+    public void RespawnPlayer() => m_playerManager.Respawn();
 
 }

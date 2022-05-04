@@ -5,7 +5,7 @@ using MEC;
 using DG.Tweening;
 using Photon.Pun;
 
-public class ChargeCannon : Weapon
+public class ChargeCannon : Weapon //TODO
 {
     private GameObject m_bullet;
     private bool m_isCharging;
@@ -16,11 +16,11 @@ public class ChargeCannon : Weapon
     {
         if (m_isCharging)
         {
-            m_isCharging = false;
             _photonView.RPC("StopCharge", RpcTarget.All);
             //StopCharge();
         }
-        base.OnDisable();
+        _isActive = false;
+        _isShooting = false;
     }
     protected override void PoolOnGet(GameObject obj)
     {
@@ -32,9 +32,6 @@ public class ChargeCannon : Weapon
 
     protected override void Update()
     {
-        if (!_photonView.IsMine)
-            return;
-
         if (_isShooting && Time.time >= _nextTimeToFire)
         {
             _photonView.RPC("Charge", RpcTarget.All);
@@ -49,18 +46,25 @@ public class ChargeCannon : Weapon
     }
 
     [PunRPC]
-    protected void Charge()
+    private void Charge()
     {
         if (_currentAmmo <= 0)
             return;
 
         if (!m_isCharging) {
+            Debug.Log("charging");
             m_bullet = _bulletPool.Get();
             Timing.RunCoroutine(Charging().CancelWith(gameObject), "chargeRoutine");
         }
         m_isCharging = true;
         m_bullet.transform.position = _firePoint.position;
         m_bullet.transform.rotation = _firePoint.rotation;
+    }
+
+    [PunRPC]
+    private void RPC_Charge()
+    {
+
     }
 
     [PunRPC]
@@ -78,9 +82,19 @@ public class ChargeCannon : Weapon
 
         Bullet bulletScript = m_bullet.GetComponent<Bullet>();
         bulletScript.SetDamage(_damage);
+
+        if (_photonView.IsMine)
+            bulletScript.SetPhotonView(_photonView);
+
         bulletScript.Init(KillBullet);
 
         m_isCharging = false;
+    }
+
+    [PunRPC]
+    private void RPC_Shoot()
+    {
+
     }
 
     IEnumerator<float> Charging()
@@ -96,6 +110,7 @@ public class ChargeCannon : Weapon
     [PunRPC]
     private void StopCharge()
     {
+        Debug.Log("cancelcharge");
         m_isCharging = false;
         DOTween.Kill(m_bullet, false);
         DOTween.Clear();

@@ -21,9 +21,11 @@ public class EnemyShoot : MonoBehaviour
 
     public void Shoot()
     {
+        if (!m_photonView.IsMine)
+            return;
+
         if (Time.time > _nextTimeToFire)
         {
-            Debug.Log("Shoot");
             _nextTimeToFire = Time.time + _fireRate;
             m_photonView.RPC("RPC_EnemyShoot", RpcTarget.All);
         }

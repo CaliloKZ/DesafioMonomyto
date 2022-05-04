@@ -3,7 +3,6 @@ using Photon.Pun;
 
 public class ConnectToServer : MonoBehaviourPunCallbacks
 {
-    [SerializeField] private string m_sceneToLoad;
     [SerializeField] private GameObject m_loadingPanel;
 
     private void Start()

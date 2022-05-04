@@ -6,7 +6,9 @@ using Photon.Pun;
 
 public class EnemyPool : MonoBehaviour
 {
-    private ObjectPool<GameObject> m_enemyPool;
+    private static ObjectPool<GameObject> m_enemyPool;
+
+    private PhotonView m_photonView;
 
     [SerializeField] private List<Transform> m_enemySpawnLocations = new List<Transform>();
     private int m_enemySpawnIndex;
@@ -17,8 +19,10 @@ public class EnemyPool : MonoBehaviour
     [SerializeField] private int _poolDefaultCapacity = 10;
     [SerializeField] private int _poolMaxCapacity = 100;
 
-    [SerializeField] private Transform m_enemiesParent;
-
+    private void Awake()
+    {
+        m_photonView = GetComponent<PhotonView>();
+    }
 
     private void Start()
     {
@@ -32,7 +36,8 @@ public class EnemyPool : MonoBehaviour
             PoolOnDestroy(enemy);
         }, false, _poolDefaultCapacity, _poolMaxCapacity);
 
-        SpawnEnemies(m_enemySpawnLocations.Count);
+        if (m_photonView.IsMine)
+            SpawnEnemies(m_enemySpawnLocations.Count);
     }
 
     #region PoolMethods
@@ -41,8 +46,7 @@ public class EnemyPool : MonoBehaviour
     {
         Debug.Log($"EnemySpawnIndex: {m_enemySpawnIndex}");
         var enemy = PhotonNetwork.Instantiate((m_prefabPath + m_enemyPrefab.name), m_enemySpawnLocations[m_enemySpawnIndex].position, Quaternion.identity);
-        enemy.transform.SetParent(m_enemiesParent);
-        enemy.GetComponentInChildren<EnemyHealth>().Init(OnEnemyDeath);
+        enemy.transform.SetParent(transform);
         return enemy;
     }
 
@@ -76,8 +80,12 @@ public class EnemyPool : MonoBehaviour
         }
     }
 
-    private void OnEnemyDeath(EnemyHealth enemy)
+    public static void OnEnemyDeath(EnemyHealth enemy)
     {
+        Debug.Log($"m_enemyPool = {m_enemyPool}");
+        Debug.Log($"m_enemy = {enemy}");
+        Debug.Log($"m_enemyGameObject = {enemy.gameObject}");
         m_enemyPool.Release(enemy.gameObject);
     }
+
 }

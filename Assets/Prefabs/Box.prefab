@@ -98,7 +98,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29063aadfdb0d004485bde8431e75da1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_initialHealth: 9
+  m_initialHealth: {fileID: 11400000, guid: a6a92d73ce4336c47addfe8075a6b8e3, type: 2}
   m_possibleDrops:
   - {fileID: 11400000, guid: 3fa1c55cfe72c4040aa2fe345fb58027, type: 2}
   - {fileID: 11400000, guid: 31eed4ddf3ffcf4479f07ffe4df2d9bb, type: 2}

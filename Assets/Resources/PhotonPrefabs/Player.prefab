@@ -204,8 +204,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abd6db38d8c5f7c4b8e6409e10a90293, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_maxHealth: 10
-  m_startingHealth: 10
+  m_maxHealth: {fileID: 11400000, guid: 65483607e8292e34a9eb71f411302934, type: 2}
+  m_currentHealth: {fileID: 11400000, guid: 374587f4e0646344aaeb2c7f474565a8, type: 2}
+  m_onPlayerDeath: {fileID: 11400000, guid: 3afb5079585ffbb4588335047f0a2c2e, type: 2}
+  m_onOtherPlayerDeath: {fileID: 11400000, guid: 6a00c1ebc5ad5b240b77579c1b1dd4f6, type: 2}
+  m_onPlayerHealthChange: {fileID: 11400000, guid: 2a0265d405dad4f44a11da1dffbb9204, type: 2}
 --- !u!95 &9019629689348822876
 Animator:
   serializedVersion: 4

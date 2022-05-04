@@ -59,7 +59,7 @@ public abstract class Weapon : MonoBehaviour
     {
         _isActive = false;
         _isShooting = false;
-        _bulletPool.Dispose();
+        //_bulletPool.Dispose();
     }
 
     protected virtual void Start()
