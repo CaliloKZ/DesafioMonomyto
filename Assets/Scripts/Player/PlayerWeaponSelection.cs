@@ -18,24 +18,44 @@ public class PlayerWeaponSelection : MonoBehaviour
     private int m_currentWeaponIndex = 0;
 
     private PhotonView m_playerPhotonView;
+    private bool m_isPlayerPhotonViewMine;
 
     private void Awake()
     {
         m_playerPhotonView = GetComponent<PhotonView>();
+        m_isPlayerPhotonViewMine = m_playerPhotonView.IsMine;
         m_playerAnimator = GetComponent<Animator>();
     }
 
     private void Start()
     {
-        if (!m_playerPhotonView.IsMine)
+        if (!m_isPlayerPhotonViewMine)
             return;
 
+        ActivatePlayerWeaponInput();
+        m_playerPhotonView.RPC("EquipWeapon", RpcTarget.All, Weapons.Single);
+        //EquipWeapon(weaponsList[0]);
+    }
+
+    private void ActivatePlayerWeaponInput()
+    {
         m_playerInputActions = new PlayerInputActions();
         m_playerInputActions.Enable();
         m_playerInputActions.Player.WeaponScroll.performed += SwitchWeaponScroll;
         m_playerInputActions.Player.WeaponKey.performed += SwitchWeaponKey;
-        m_playerPhotonView.RPC("EquipWeapon", RpcTarget.All, Weapons.Single);
-        //EquipWeapon(weaponsList[0]);
+    }
+
+    private void DeactivatePlayerWeaponInput()
+    {
+        m_playerInputActions.Disable();
+        m_playerInputActions.Player.WeaponScroll.performed -= SwitchWeaponScroll;
+        m_playerInputActions.Player.WeaponKey.performed -= SwitchWeaponKey;
+    }
+
+    private void OnDestroy()
+    {
+        if(m_isPlayerPhotonViewMine)
+            DeactivatePlayerWeaponInput();
     }
 
     void SwitchWeaponScroll(InputAction.CallbackContext context)
@@ -87,7 +107,7 @@ public class PlayerWeaponSelection : MonoBehaviour
         selectedWeapon.gameObject.SetActive(true);
         m_playerAnimator.SetInteger("CannonIndex", (int)selectedWeapon.GetWeaponType());
 
-        if (m_playerPhotonView.IsMine)
+        if (m_isPlayerPhotonViewMine)
             OnWeaponChanged(selectedWeapon);
     }
 

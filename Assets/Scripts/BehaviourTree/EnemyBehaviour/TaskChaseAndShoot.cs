@@ -28,7 +28,7 @@ public class TaskChaseAndShoot : Node
                 }
                 else if (_distanceToTarget < m_enemyBehaviour.minRange)
                 {
-                    _body.position = Vector2.MoveTowards(_body.position, -_target.position, m_enemyBehaviour.moveSpeed * Time.deltaTime);
+                    _body.position = Vector2.MoveTowards(_body.position, _target.position, -m_enemyBehaviour.moveSpeed * Time.deltaTime);
                     _body.right = _target.position - _body.position;
                 }
 
@@ -42,8 +42,7 @@ public class TaskChaseAndShoot : Node
         }
         else
         {
-            _state = NodeState.FAILURE;
-            return _state;
+            ClearData("target");
         }
         
         _state = NodeState.RUNNING;

@@ -44,8 +44,7 @@ public class EnemyPool : MonoBehaviour
 
     private GameObject PoolOnCreate()
     {
-        Debug.Log($"EnemySpawnIndex: {m_enemySpawnIndex}");
-        var enemy = PhotonNetwork.Instantiate((m_prefabPath + m_enemyPrefab.name), m_enemySpawnLocations[m_enemySpawnIndex].position, Quaternion.identity);
+         var enemy = PhotonNetwork.Instantiate((m_prefabPath + m_enemyPrefab.name), m_enemySpawnLocations[m_enemySpawnIndex].position, Quaternion.identity);
         enemy.transform.SetParent(transform);
         return enemy;
     }
@@ -80,12 +79,6 @@ public class EnemyPool : MonoBehaviour
         }
     }
 
-    public static void OnEnemyDeath(EnemyHealth enemy)
-    {
-        Debug.Log($"m_enemyPool = {m_enemyPool}");
-        Debug.Log($"m_enemy = {enemy}");
-        Debug.Log($"m_enemyGameObject = {enemy.gameObject}");
-        m_enemyPool.Release(enemy.gameObject);
-    }
+    public static void OnEnemyDeath(EnemyHealth enemy) => m_enemyPool.Release(enemy.gameObject);
 
 }

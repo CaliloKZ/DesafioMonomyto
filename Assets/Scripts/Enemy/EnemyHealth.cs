@@ -11,6 +11,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
     private PhotonView m_photonView;
 
+    private bool m_isKillerViewMine;
     public int Health { get; set; }
 
     private void Awake()
@@ -24,48 +25,35 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     public void ResetHealth() => Health = m_maxHealth.value;
 
 
-
-    public void Damage(int damageAmount)
-    {
-        m_photonView.RPC("RPC_Damage", RpcTarget.All, damageAmount);
-    }
-
     public void Damage(int damageAmount, PhotonView view)
     {
-        m_photonView.RPC("RPC_Damage", RpcTarget.All, damageAmount, view.IsMine);
-    }
+        m_isKillerViewMine = view.IsMine;
 
-    [PunRPC]
-    public void RPC_Damage(int damageAmount)
-    {
-        Health -= damageAmount;
-        if (Health <= 0)
+        if (view.CompareTag("Enemy"))
+            return;
+
+        if (m_isKillerViewMine)
         {
-            //m_photonView.RPC("Die", RpcTarget.All);
-            Die();
+            m_photonView.RPC("RPC_Damage", RpcTarget.All, damageAmount, true);
         }
     }
 
     [PunRPC]
-    public void RPC_Damage(int damageAmount, bool isViewMine)
+    public void RPC_Damage(int damageAmount, bool hasView)
     {
         Health -= damageAmount;
         if (Health <= 0)
         {
-            //m_photonView.RPC("Die", RpcTarget.All);
-            if (isViewMine)
-            {
-                m_onEnemyDeath.Raise();
-                Debug.Log($"EnemyDied, Event Raised");
-            }
- 
-            Die();
+            Die(hasView);
         }
     }
 
-    //[PunRPC]
-    private void Die()
+    private void Die(bool hasView)
     {
+        if (hasView && m_isKillerViewMine)
+        {
+            m_onEnemyDeath.Raise();
+        }
         EnemyPool.OnEnemyDeath(this);
     }
 }

@@ -34,8 +34,7 @@ public class ChargeCannon : Weapon //TODO
     {
         if (_isShooting && Time.time >= _nextTimeToFire)
         {
-            _photonView.RPC("Charge", RpcTarget.All);
-            //Charge();
+            Charge();
         }
 
         if(!_isShooting && m_isCharging)
@@ -45,56 +44,59 @@ public class ChargeCannon : Weapon //TODO
         }
     }
 
-    [PunRPC]
     private void Charge()
     {
         if (_currentAmmo <= 0)
             return;
 
-        if (!m_isCharging) {
+        if (!m_isCharging) 
+        {
             Debug.Log("charging");
-            m_bullet = _bulletPool.Get();
-            Timing.RunCoroutine(Charging().CancelWith(gameObject), "chargeRoutine");
+            m_isCharging = true;
+            _photonView.RPC("RPC_Charge", RpcTarget.All);
         }
-        m_isCharging = true;
-        m_bullet.transform.position = _firePoint.position;
-        m_bullet.transform.rotation = _firePoint.rotation;
+        _photonView.RPC("RPC_Charging", RpcTarget.All);
     }
 
     [PunRPC]
     private void RPC_Charge()
     {
-
+        m_bullet = _bulletPool.Get();
+        Timing.RunCoroutine(Charging().CancelWith(gameObject), "chargeRoutine");
     }
 
     [PunRPC]
+    private void RPC_Charging()
+    {
+        m_bullet.transform.position = _firePoint.position;
+        m_bullet.transform.rotation = _firePoint.rotation;
+    }
+
     protected override void Shoot()
     {
-        if (_photonView.IsMine)
+        if (_isPhotonViewMine)
         {
             _nextTimeToFire = Time.time + _fireRate;
             _currentAmmo--;
             AmmoCount.OnCurrentAmmoChange(_currentAmmo);
         }
+        _photonView.RPC("RPC_Shoot", RpcTarget.All);
+    }
 
+    [PunRPC]
+    private void RPC_Shoot()
+    {
         m_bullet.GetComponent<Rigidbody2D>().AddForce(_firePoint.right * _bulletSpeed, ForceMode2D.Impulse);
         m_bullet.GetComponent<CircleCollider2D>().enabled = true;
 
         Bullet bulletScript = m_bullet.GetComponent<Bullet>();
         bulletScript.SetDamage(_damage);
 
-        if (_photonView.IsMine)
+        if (_isPhotonViewMine)
             bulletScript.SetPhotonView(_photonView);
 
         bulletScript.Init(KillBullet);
-
         m_isCharging = false;
-    }
-
-    [PunRPC]
-    private void RPC_Shoot()
-    {
-
     }
 
     IEnumerator<float> Charging()
@@ -103,8 +105,7 @@ public class ChargeCannon : Weapon //TODO
         m_bullet.transform.DOScale(1, m_chargeTime);
         m_bullet.GetComponent<SpriteRenderer>().DOColor(Color.red, m_chargeTime);
         yield return Timing.WaitForSeconds(m_chargeTime);
-        _photonView.RPC("Shoot", RpcTarget.All);
-        //Shoot();
+        Shoot();
     }
 
     [PunRPC]

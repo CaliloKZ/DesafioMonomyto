@@ -1,6 +1,4 @@
-using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.Pool;
 using Photon.Pun;
 
@@ -12,8 +10,6 @@ public abstract class Weapon : MonoBehaviour
         return _weaponType;
     }
 
-    private PlayerInputActions m_playerInputActions;
-
     [SerializeField] protected int _damage;
     [SerializeField] protected float _bulletSpeed;
     [SerializeField] protected GameObject _bulletPrefab;
@@ -23,6 +19,7 @@ public abstract class Weapon : MonoBehaviour
     [SerializeField] protected float _fireRate;
     protected float _nextTimeToFire = 0f;
 
+    protected Transform m_bulletPoolObject;
     protected ObjectPool<GameObject> _bulletPool;
 
     [SerializeField] protected int _poolDefaultCapacity = 10;
@@ -32,6 +29,7 @@ public abstract class Weapon : MonoBehaviour
     protected int _currentAmmo;
 
     protected PhotonView _photonView;
+    protected bool _isPhotonViewMine;
 
     protected bool _isActive;
 
@@ -46,7 +44,7 @@ public abstract class Weapon : MonoBehaviour
     protected virtual void Awake()
     {
         _photonView = GetComponent<PhotonView>();
-        m_playerInputActions = new PlayerInputActions();
+        _isPhotonViewMine = _photonView.IsMine;
         _currentAmmo = _maxAmmo;
     }
 
@@ -64,8 +62,10 @@ public abstract class Weapon : MonoBehaviour
 
     protected virtual void Start()
     {
+        m_bulletPoolObject = GameObject.FindGameObjectWithTag("BulletPool").transform;
+
         _bulletPool = new ObjectPool<GameObject>(() => {
-            return Instantiate(_bulletPrefab);
+            return Instantiate(_bulletPrefab, m_bulletPoolObject);
         }, bullet => {
             PoolOnGet(bullet);
         }, bullet => {
@@ -96,7 +96,7 @@ public abstract class Weapon : MonoBehaviour
 
     protected virtual void Update()
     {
-        if (!_photonView.IsMine)
+        if (!_isPhotonViewMine)
             return;
 
         if(_isShooting && Time.time >= _nextTimeToFire)

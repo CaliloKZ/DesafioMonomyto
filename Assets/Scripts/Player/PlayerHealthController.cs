@@ -10,67 +10,71 @@ public class PlayerHealthController : MonoBehaviour, IDamageable
     [SerializeField] private GameEvent m_onPlayerHealthChange;
 
     private PhotonView m_photonView;
+    private bool m_isPlayerPhotonViewMine;
+
+    private bool m_isKillerViewMine;
 
     public int Health { get; set; }
 
-    private void Awake() => m_photonView = GetComponent<PhotonView>();
-    private void OnEnable() => Health = m_maxHealth.value;
-
-    
-    public void Damage(int damageAmount)
+    private void Awake()
     {
-        m_photonView.RPC("RPC_Damage", RpcTarget.All, damageAmount);
+        m_photonView = GetComponent<PhotonView>();
+        m_isPlayerPhotonViewMine = m_photonView.IsMine;
+    }
+
+    private void OnEnable()
+    {
+        Health = m_maxHealth.value;
+        m_currentHealth.value = Health;
+        if (m_isPlayerPhotonViewMine)
+        {
+            m_onPlayerHealthChange.Raise();
+        }
     }
 
     public void Damage(int damageAmount, PhotonView view)
     {
-        m_photonView.RPC("RPC_Damage", RpcTarget.All, damageAmount, view.IsMine);
+        m_isKillerViewMine = view.IsMine;
+
+        if (view.CompareTag("Enemy"))
+        {
+            m_photonView.RPC("RPC_Damage", RpcTarget.All, damageAmount, false);
+            return;
+        }
+
+        if (!view.CompareTag("Enemy") && m_isKillerViewMine)
+        {
+            m_photonView.RPC("RPC_Damage", RpcTarget.All, damageAmount, true);
+        }
+
     }
 
-    [PunRPC]
-    private void RPC_Damage(int damageAmount)
-    {
-        //if (!m_photonView.IsMine)
-        //    return;
 
+    [PunRPC]
+    private void RPC_Damage(int damageAmount, bool hasView)
+    {
         Health -= damageAmount;
         m_currentHealth.value = Health;
 
-        if (m_photonView.IsMine)
+        if (m_isPlayerPhotonViewMine)
             m_onPlayerHealthChange.Raise();
+
 
         if (Health <= 0)
         {
-            Die();
+            Die(hasView);
         }
     }
 
-    [PunRPC]
-    private void RPC_Damage(int damageAmount, bool isViewMine)
+    private void Die(bool hasView)
     {
-        //if (!m_photonView.IsMine)
-        //    return;
+        if (hasView && m_isKillerViewMine)
+            m_onOtherPlayerDeath.Raise();
 
-        Health -= damageAmount;
-        m_currentHealth.value = Health;
-
-        if (m_photonView.IsMine)
-            m_onPlayerHealthChange.Raise();
-
-        if (Health <= 0)
+        if (m_isPlayerPhotonViewMine)
         {
-            if (isViewMine)
-                m_onOtherPlayerDeath.Raise();
-
-            Die();
-        }
-    }
-
-    private void Die()
-    {
-        if (m_photonView.IsMine)
             m_onPlayerDeath.Raise();
-
-        gameObject.SetActive(false);
+            PhotonNetwork.Destroy(gameObject);
+        }
     }
 }

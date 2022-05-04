@@ -8,7 +8,7 @@ public class SingleCannon : Weapon
         if (_currentAmmo <= 0)
             return;
 
-        if (_photonView.IsMine)
+        if (_isPhotonViewMine)
         {
             _nextTimeToFire = Time.time + _fireRate;
 
@@ -30,7 +30,7 @@ public class SingleCannon : Weapon
         Bullet bulletScript = bullet.GetComponent<Bullet>();
         bulletScript.SetDamage(_damage);
 
-        if (_photonView.IsMine)
+        if (_isPhotonViewMine)
             bulletScript.SetPhotonView(_photonView);
 
         bulletScript.Init(KillBullet);

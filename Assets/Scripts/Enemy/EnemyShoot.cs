@@ -38,6 +38,10 @@ public class EnemyShoot : MonoBehaviour
         _bullet.GetComponent<Rigidbody2D>().AddForce(m_firePoint.right * m_bulletSpeed, ForceMode2D.Impulse);
         Bullet bulletScript = _bullet.GetComponent<Bullet>();
         bulletScript.SetDamage(m_damage);
+
+        if(m_photonView.IsMine)
+            bulletScript.SetPhotonView(m_photonView);
+
         bulletScript.Init(KillBullet);
     }
 

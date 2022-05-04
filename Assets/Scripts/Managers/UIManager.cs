@@ -1,16 +1,40 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class UIManager : MonoBehaviour
 {
-    [SerializeField] private List<GameObject> m_weaponSelectHighlights = new List<GameObject>();
-    [SerializeField] private GameObject m_currentSelectedHighlight;
+     [SerializeField] private EscapeUI m_escapePanel;
 
-    public void ChangeWeaponHighlight(int index)
+    private PlayerInputActions m_playerInput;
+
+    private void OnEnable()
     {
-        m_currentSelectedHighlight.SetActive(false);
-        m_currentSelectedHighlight = m_weaponSelectHighlights[index];
-        m_currentSelectedHighlight.SetActive(true);
+        m_playerInput = new PlayerInputActions();
+        m_playerInput.UI.Enable();
+        m_playerInput.UI.OpenEscapeMenu.performed += OpenEscapePanel;
+    }
+
+    public void OnHostLeft() => m_playerInput.UI.Disable();
+
+
+    public void OpenEscapePanel(InputAction.CallbackContext context)
+    {
+        m_escapePanel.OpenPanel();
+        m_playerInput.UI.OpenEscapeMenu.performed -= OpenEscapePanel;
+        m_playerInput.UI.OpenEscapeMenu.performed += CloseEscapePanel;
+    }
+
+    public void CloseEscapePanel()
+    {
+        m_escapePanel.ClosePanel();
+        m_playerInput.UI.OpenEscapeMenu.performed += OpenEscapePanel;
+        m_playerInput.UI.OpenEscapeMenu.performed -= CloseEscapePanel;
+    }
+
+    public void CloseEscapePanel(InputAction.CallbackContext context)
+    {
+        m_escapePanel.ClosePanel();
+        m_playerInput.UI.OpenEscapeMenu.performed += OpenEscapePanel;
+        m_playerInput.UI.OpenEscapeMenu.performed -= CloseEscapePanel;
     }
 }

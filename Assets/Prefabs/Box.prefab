@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7328575633214256656}
   - component: {fileID: 7328575633214256662}
   - component: {fileID: 7328575633214256661}
+  - component: {fileID: 6324951043045536944}
   m_Layer: 8
   m_Name: Box
   m_TagString: Untagged
@@ -76,7 +77,7 @@ SpriteRenderer:
   m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.3882353, g: 0.27450982, b: 0.03137255, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -98,11 +99,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29063aadfdb0d004485bde8431e75da1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_initialHealth: {fileID: 11400000, guid: a6a92d73ce4336c47addfe8075a6b8e3, type: 2}
+  m_maxHealth: {fileID: 11400000, guid: a6a92d73ce4336c47addfe8075a6b8e3, type: 2}
   m_possibleDrops:
   - {fileID: 11400000, guid: 3fa1c55cfe72c4040aa2fe345fb58027, type: 2}
   - {fileID: 11400000, guid: 31eed4ddf3ffcf4479f07ffe4df2d9bb, type: 2}
   - {fileID: 11400000, guid: 569d0c8b6dba31647a54f1c4882fc577, type: 2}
+  m_onBoxBreak: {fileID: 11400000, guid: f4d365d489807a2498c277b4cbb9a36d, type: 2}
 --- !u!61 &7328575633214256661
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -129,3 +131,25 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &6324951043045536944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7328575633214256657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0

@@ -4,7 +4,7 @@ using Photon.Pun;
 
 public class Bullet : MonoBehaviour
 {
-    private PhotonView m_playerPhotonView;
+    private PhotonView m_shooterPhotonView;
     private Action<Bullet> m_killAction;
     private int m_damage;
 
@@ -12,23 +12,17 @@ public class Bullet : MonoBehaviour
 
     public void SetDamage(int damageAmount) => m_damage = damageAmount;
 
-    public void SetPhotonView(PhotonView view) => m_playerPhotonView = view;
+    public void SetPhotonView(PhotonView view) => m_shooterPhotonView = view;
+
+    
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         IDamageable hit = other.GetComponent<IDamageable>();
-        
-        if(hit != null)
+        if(hit != null && m_shooterPhotonView != null)
         {
-            if (m_playerPhotonView != null)
-            {
-                hit.Damage(m_damage, m_playerPhotonView);
-            }
-
-            else
-                hit.Damage(m_damage);
+             hit.Damage(m_damage, m_shooterPhotonView);
         }
-
         m_killAction(this);
     }
 }

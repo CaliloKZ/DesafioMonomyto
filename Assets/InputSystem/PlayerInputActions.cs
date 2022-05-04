@@ -187,6 +187,45 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""UI"",
+            ""id"": ""d017280f-30f2-4104-a159-27c3d4522fe5"",
+            ""actions"": [
+                {
+                    ""name"": ""OpenEscapeMenu"",
+                    ""type"": ""Button"",
+                    ""id"": ""79d63d3c-efe2-403c-b724-8caf5e4f08b4"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""c521229c-57b5-453b-b72b-d7f4b7ad5942"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""OpenEscapeMenu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""23e1c379-be3c-47ba-b632-19fdc00a7e4a"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""OpenEscapeMenu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -208,6 +247,9 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         m_Player_WeaponScroll = m_Player.FindAction("WeaponScroll", throwIfNotFound: true);
         m_Player_WeaponKey = m_Player.FindAction("WeaponKey", throwIfNotFound: true);
         m_Player_Shoot = m_Player.FindAction("Shoot", throwIfNotFound: true);
+        // UI
+        m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
+        m_UI_OpenEscapeMenu = m_UI.FindAction("OpenEscapeMenu", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -320,6 +362,39 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
+
+    // UI
+    private readonly InputActionMap m_UI;
+    private IUIActions m_UIActionsCallbackInterface;
+    private readonly InputAction m_UI_OpenEscapeMenu;
+    public struct UIActions
+    {
+        private @PlayerInputActions m_Wrapper;
+        public UIActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @OpenEscapeMenu => m_Wrapper.m_UI_OpenEscapeMenu;
+        public InputActionMap Get() { return m_Wrapper.m_UI; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(UIActions set) { return set.Get(); }
+        public void SetCallbacks(IUIActions instance)
+        {
+            if (m_Wrapper.m_UIActionsCallbackInterface != null)
+            {
+                @OpenEscapeMenu.started -= m_Wrapper.m_UIActionsCallbackInterface.OnOpenEscapeMenu;
+                @OpenEscapeMenu.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnOpenEscapeMenu;
+                @OpenEscapeMenu.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnOpenEscapeMenu;
+            }
+            m_Wrapper.m_UIActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @OpenEscapeMenu.started += instance.OnOpenEscapeMenu;
+                @OpenEscapeMenu.performed += instance.OnOpenEscapeMenu;
+                @OpenEscapeMenu.canceled += instance.OnOpenEscapeMenu;
+            }
+        }
+    }
+    public UIActions @UI => new UIActions(this);
     private int m_KeyboardSchemeIndex = -1;
     public InputControlScheme KeyboardScheme
     {
@@ -344,5 +419,9 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         void OnWeaponScroll(InputAction.CallbackContext context);
         void OnWeaponKey(InputAction.CallbackContext context);
         void OnShoot(InputAction.CallbackContext context);
+    }
+    public interface IUIActions
+    {
+        void OnOpenEscapeMenu(InputAction.CallbackContext context);
     }
 }

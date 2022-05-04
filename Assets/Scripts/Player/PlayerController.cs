@@ -12,12 +12,16 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float m_moveSpeed;
     private Vector2 m_inputVector;
 
+    [SerializeField] private Transform m_bodyTransform;
     private Vector2 m_mousePosition;
     private Vector2 m_lookDirection;
     private float m_angle;
     private Camera m_mainCam;
 
+
+
     private bool m_canShoot = true;
+    private bool m_isPhotonViewMine;
 
     private PhotonView m_photonView;
 
@@ -26,9 +30,14 @@ public class PlayerController : MonoBehaviour
         m_photonView = GetComponent<PhotonView>();
         m_rigidbody = GetComponent<Rigidbody2D>();
         m_playerWeaponSelection = GetComponent<PlayerWeaponSelection>();
-        ActivatePlayerInput();
 
-        if (!m_photonView.IsMine)
+        m_isPhotonViewMine = m_photonView.IsMine;
+
+        if (m_isPhotonViewMine)
+        {
+            ActivatePlayerInput();
+        }
+        else
         {
             Destroy(m_rigidbody);
         }
@@ -43,6 +52,13 @@ public class PlayerController : MonoBehaviour
         m_playerInputActions.Player.Shoot.canceled += ShootInput;
     }
 
+    private void DeactivatePlayerInput()
+    {
+        m_playerInputActions.Player.Disable();
+        m_playerInputActions.Player.Shoot.started -= ShootInput;
+        m_playerInputActions.Player.Shoot.canceled -= ShootInput;
+    }
+
     private void Start()
     {
         m_mainCam = GameManager.mainCamera;
@@ -50,7 +66,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if (!m_photonView.IsMine)
+        if (!m_isPhotonViewMine)
             return;
 
             m_mousePosition = m_mainCam.ScreenToWorldPoint(Input.mousePosition);
@@ -58,8 +74,9 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!m_photonView.IsMine)
+        if (!m_isPhotonViewMine)
             return;
+
         //movimentação
         m_inputVector = m_playerInputActions.Player.Movement.ReadValue<Vector2>();
         m_rigidbody.AddForce(new Vector2(m_inputVector.x, m_inputVector.y) * m_moveSpeed, ForceMode2D.Force);
@@ -67,12 +84,14 @@ public class PlayerController : MonoBehaviour
         //rotação de acordo com o mouse
         m_lookDirection = m_mousePosition - m_rigidbody.position;
         m_angle = Mathf.Atan2(m_lookDirection.y, m_lookDirection.x) * Mathf.Rad2Deg;
-        m_rigidbody.rotation = m_angle;
+        m_bodyTransform.rotation = Quaternion.AngleAxis(m_angle, Vector3.forward);
+        //m_rigidbody.rotation = m_angle;
+
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (!m_photonView.IsMine)
+        if (! m_isPhotonViewMine)
             return;
 
         var other = collision.collider;
@@ -86,9 +105,15 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        if (m_isPhotonViewMine)
+            DeactivatePlayerInput();
+    }
+
     private void ShootInput(InputAction.CallbackContext context)
     {
-        if (!m_canShoot || !m_photonView.IsMine)
+        if (!m_canShoot || !m_isPhotonViewMine)
             return;
 
         if (context.started)

@@ -12,13 +12,13 @@ public class MainMenuManager : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI m_playerNameText;
 
-    private void Start()
+    private void Awake()
     {
-        foreach(Transform child in transform)
-        { 
+        m_lobbyPanels.Clear();
+        foreach (Transform child in transform)
+        {
             AddPanelsToList(child.gameObject);
         }
-        m_playerNameText.text = PhotonNetwork.NickName;
     }
 
     private static void AddPanelsToList(GameObject panel) => m_lobbyPanels.Add(panel);
@@ -36,13 +36,14 @@ public class MainMenuManager : MonoBehaviour
     public static void OpenPanel(LobbyPanels panel)
     {
         if (m_currentOpenPanel == null)
-            m_currentOpenPanel = m_lobbyPanels[0];
+            m_currentOpenPanel = m_lobbyPanels[(int)LobbyPanels.Loading];
 
         m_currentOpenPanel.SetActive(false);
         m_currentOpenPanel = m_lobbyPanels[(int)panel];
         m_currentOpenPanel.SetActive(true);
     }
 
+    public static void OnGameStart() => m_currentOpenPanel = null;
     public void QuitGame()
     {
         Application.Quit();

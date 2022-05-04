@@ -10,6 +10,8 @@ public class Destructable : MonoBehaviour, IDamageable, IDroppable
 
     private PhotonView m_photonView;
 
+    private bool m_isKillerViewMine;
+
     public int Health { get; set; }
 
 
@@ -20,44 +22,29 @@ public class Destructable : MonoBehaviour, IDamageable, IDroppable
         Health = m_maxHealth.value;
     }
 
-    public void Damage(int damageAmount)
-    {
-        m_photonView.RPC("RPC_Damage", RpcTarget.All, damageAmount);
-    }
-
     public void Damage(int damageAmount, PhotonView view)
     {
-        m_photonView.RPC("RPC_Damage", RpcTarget.All, damageAmount, view.IsMine);
-    }
+        m_isKillerViewMine = view.IsMine;
 
-    [PunRPC]
-    public void RPC_Damage(int damageAmount)
-    {
-        Health -= damageAmount;
-        Debug.Log("hit, damage = " + damageAmount + ". Health = " + Health);
-        if (Health <= 0)
+        if (view.CompareTag("Enemy"))
         {
-            Drop(RandomItemDrop.GetRandomDrop(m_possibleDrops));
-            Destroy(gameObject);
+            m_photonView.RPC("RPC_Damage", RpcTarget.All, damageAmount, false);
+            return;
+        }
+
+        if (m_isKillerViewMine)
+        {
+            m_photonView.RPC("RPC_Damage", RpcTarget.All, damageAmount, true);
         }
     }
 
     [PunRPC]
-    public void RPC_Damage(int damageAmount, bool isViewMine) 
+    public void RPC_Damage(int damageAmount, bool hasView) 
     {
         Health -= damageAmount;
-        Debug.Log("hit, damage = " + damageAmount + ". Health = " + Health);
         if (Health <= 0)
         {
-            if (isViewMine)
-            {
-                m_onBoxBreak.Raise();
-                Debug.Log($"BoxBreaked, Event Raised");
-            }
-
-
-            Drop(RandomItemDrop.GetRandomDrop(m_possibleDrops));
-            Destroy(gameObject);
+            Die(hasView);
         }
     }
 
@@ -65,5 +52,15 @@ public class Destructable : MonoBehaviour, IDamageable, IDroppable
     {
         if(drop != null)
             Instantiate(drop, transform.position, Quaternion.identity);
+    }
+
+    private void Die(bool hasView)
+    {
+        if (hasView && m_isKillerViewMine)
+        {
+            m_onBoxBreak.Raise();
+        }
+        Drop(RandomItemDrop.GetRandomDrop(m_possibleDrops));
+        Destroy(gameObject);
     }
 }

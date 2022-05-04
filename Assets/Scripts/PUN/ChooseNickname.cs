@@ -5,6 +5,7 @@ using Photon.Pun;
 public class ChooseNickname : MonoBehaviour
 {
     [SerializeField] private TMP_InputField m_nickInputField;
+    [SerializeField] private TextMeshProUGUI m_nickNameText;
     
     public void OkButton()
     {
@@ -17,7 +18,8 @@ public class ChooseNickname : MonoBehaviour
             PhotonNetwork.NickName = ($"Player {Random.Range(0, 1000).ToString("0000")}");
         }
 
-        gameObject.SetActive(false);
+        m_nickNameText.text = PhotonNetwork.NickName;
+        MainMenuManager.OpenPanel(LobbyPanels.MainMenu);
 
     }
 }

@@ -5,5 +5,6 @@ public enum LobbyPanels
     JoinRoom,
     Room,
     Error,
+    Nickname,
     Loading
 }

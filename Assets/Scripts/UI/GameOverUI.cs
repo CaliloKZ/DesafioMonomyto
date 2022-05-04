@@ -28,7 +28,7 @@ public class GameOverUI : MonoBehaviour
 
     IEnumerator<float> YouDiedAnim()
     {
-        m_youDiedTextObject.GetComponent<Image>().DOFade(255f, 1f);
+        m_youDiedTextObject.GetComponent<TextMeshProUGUI>().DOFade(255f, 1f);
         m_youDiedTextObject.transform.DOScale(1.2f, 1f);
         yield return Timing.WaitForSeconds(1f);
 

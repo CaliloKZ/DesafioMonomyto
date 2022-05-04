@@ -21,6 +21,9 @@ public class RoomsManager : MonoBehaviourPunCallbacks
     [SerializeField] private GameObject m_startBT;
 
     [SerializeField] private List<GameObject> m_roomItems = new List<GameObject>();
+    private List<PlayerListItem> m_playerListItems= new List<PlayerListItem>();
+
+    [SerializeField] private byte m_maxPlayerPerRoom;
 
 
     public void CreateRoom()
@@ -50,13 +53,21 @@ public class RoomsManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.CurrentRoom.MaxPlayers = m_maxPlayerPerRoom;
+        }
+
         m_roomNameText.text = PhotonNetwork.CurrentRoom.Name;
         MainMenuManager.OpenPanel(LobbyPanels.Room);
         Player[] _playerList = PhotonNetwork.PlayerList;
 
         for (int i = 0; i < _playerList.Length; i++)
         {
-            Instantiate(m_playerListItemPrefab, m_playerListContent).GetComponent<PlayerListItem>().SetUp(_playerList[i]);
+            var item = Instantiate(m_playerListItemPrefab, m_playerListContent);
+            var itemScript = item.GetComponent<PlayerListItem>();
+            itemScript.SetUp(_playerList[i]);
+            m_playerListItems.Add(itemScript);
         }
 
         m_startBT.SetActive(PhotonNetwork.IsMasterClient);
@@ -105,9 +116,23 @@ public class RoomsManager : MonoBehaviourPunCallbacks
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        Instantiate(m_playerListItemPrefab, m_playerListContent).GetComponent<PlayerListItem>().SetUp(newPlayer);
+        var item = Instantiate(m_playerListItemPrefab, m_playerListContent);
+        var itemScript = item.GetComponent<PlayerListItem>();
+        itemScript.SetUp(newPlayer);
+        m_playerListItems.Add(itemScript);
     }
 
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        for(int i = 0; i < m_playerListItems.Count; i++)
+        {
+            if(m_playerListItems[i].player == otherPlayer)
+            {
+                Destroy(m_playerListItems[i]);
+                return;
+            }
+        }
+    }
     public void StartGame()
     {
         PhotonNetwork.LoadLevel(1);

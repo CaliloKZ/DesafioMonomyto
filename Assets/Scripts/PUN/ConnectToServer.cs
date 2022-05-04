@@ -3,8 +3,6 @@ using Photon.Pun;
 
 public class ConnectToServer : MonoBehaviourPunCallbacks
 {
-    [SerializeField] private GameObject m_loadingPanel;
-
     private void Start()
     {
         Debug.Log("Connecting to master...");
@@ -21,7 +19,7 @@ public class ConnectToServer : MonoBehaviourPunCallbacks
     public override void OnJoinedLobby()
     {
         Debug.Log("Lobby Joined!");
-        m_loadingPanel.SetActive(false);
+        MainMenuManager.OpenPanel(LobbyPanels.Nickname);
     }
 
 
